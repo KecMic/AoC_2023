@@ -15,6 +15,7 @@ sample_input = [
 def solve(data, part2=False):
    print(f"data: {data}")
    ids = []
+   powers = []
    for l in data:
       line = l.strip().split(":")
       print("line:", [line])
@@ -27,18 +28,30 @@ def solve(data, part2=False):
          game_rounds.append(pairs)
       print("id:", id)
       print("game_rounds:", game_rounds)
-      is_possible = True
-      for r in game_rounds:
-         for p in r:
-            if p[1] == "red" and int(p[0]) > 12: is_possible = False; break
-            if p[1] == "green" and int(p[0]) > 13: is_possible = False; break
-            if p[1] == "blue" and int(p[0]) > 14: is_possible = False; break
-      if is_possible: ids.append(int(id))
+      if part2:
+         fewest = { "red":0, "green":0, "blue":0}
+         for r in game_rounds:
+            for p in r:
+               n = int(p[0])
+               if n > fewest[p[1]]:
+                  fewest[p[1]] = n
+         power = np.prod([v for v in fewest.values()])
+         powers.append(power)
+      else:
+         is_possible = True
+         for r in game_rounds:
+            for p in r:
+               if p[1] == "red" and int(p[0]) > 12: is_possible = False; break
+               if p[1] == "green" and int(p[0]) > 13: is_possible = False; break
+               if p[1] == "blue" and int(p[0]) > 14: is_possible = False; break
+         if is_possible: ids.append(int(id))
    
    print("possible ids:", ids)
    res = np.sum(ids)
+   print("powers:", powers)
+   res2 = np.sum(powers)
    if part2:
-      print(f"~~~~~~~~~> SOLUTION Part 2: {res}")
+      print(f"~~~~~~~~~> SOLUTION Part 2: {res2}")
    else:
       print(f"~~~~~~~~~> SOLUTION Part 1: {res}")
 
@@ -46,11 +59,11 @@ def solve(data, part2=False):
 if __name__ == "__main__":
    #––– sample input
    print("for sample input:")
-   solve(sample_input, part2=False)
+   solve(sample_input, part2=True)
    #exit()
 
    #––– Part 1 and Part 2
    print("for input file:")
    with open('input_02.txt', 'r') as f:
       file_data = f.readlines()
-      solve(file_data, part2=False)
+      solve(file_data, part2=True)
