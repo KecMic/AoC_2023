@@ -141,6 +141,36 @@ def solve(data, part2=False):
    #res = np.sum(unique_part_nums)
 
    if part2:
+      def find_adjacent_nums(line_idx, char_idx):
+         # line_idx: row, char_idx: col
+         line_indices = [line_idx-1, line_idx, line_idx+1]
+         adjacent_nums = []
+         for i in line_indices:
+            nums_in_line = nums[i]
+            for n in nums_in_line:
+               s, e = n
+               num = data[i][s:e]
+               if i == line_idx and (e == char_idx or (s in [char_idx-1, char_idx+1])): # same line
+                  adjacent_nums.append([i, num])
+               elif i != line_idx and ((e-1 in [char_idx-1, char_idx, char_idx+1]) or (s in [char_idx-1, char_idx, char_idx+1]) or (s<char_idx-1 and e-1>char_idx+1)): # above or below
+                  adjacent_nums.append([i, num])
+         return adjacent_nums
+
+      print("="*60)
+      gear_ratios = []
+      for i,syms_in_line in enumerate(syms):
+         #print(f"line {i} :: syms: {syms_in_line}")
+         for sym_idx in syms_in_line:
+            sym = data[i][sym_idx]
+            if sym == '*':
+               print(f"line {i} contains '*' @ idx {sym_idx}")
+               adjacent_nums = find_adjacent_nums(i, sym_idx)
+               print(f"  adjacent nums: {adjacent_nums}")
+               if len(adjacent_nums) == 2:
+                  print(f"  ~~> gear found")
+                  gear_ratio = np.prod([int(n) for _,n in adjacent_nums])
+                  gear_ratios.append(gear_ratio)
+      res = np.sum(gear_ratios)
       print(f"~~~~~~~~~> SOLUTION Part 2: {res}")
    else:
       print(f"~~~~~~~~~> SOLUTION Part 1: {res}")
@@ -148,12 +178,13 @@ def solve(data, part2=False):
 if __name__ == "__main__":
    #––– sample input
    print("for sample input:")
-   solve(sample_input, part2=False)
+   #solve(sample_input, part2=False)
+   solve(sample_input, part2=True)
    #exit()
 
    #––– Part 1 and Part 2
    print("for input file:")
    with open('input_03.txt', 'r') as f:
       file_data = f.readlines()
-      solve(file_data, part2=False)
-      #solve(file_data, part2=True)
+      #solve(file_data, part2=False)
+      solve(file_data, part2=True)
